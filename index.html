@@ -1,0 +1,647 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Месяцы на французском</title>
+  <style>
+    :root {
+      color-scheme: light dark;
+      --font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI", system-ui, sans-serif;
+      --transition: 0.2s ease;
+      --radius: 18px;
+      --space: clamp(16px, 4vw, 32px);
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      font-family: var(--font-family);
+      display: flex;
+      flex-direction: column;
+      background: var(--bg-color);
+      color: var(--text-color);
+      transition: background var(--transition), color var(--transition);
+    }
+
+    body.theme-light {
+      --bg-color: #f3f4f6;
+      --card-bg: #ffffff;
+      --text-color: #111111;
+      --muted-text: #5c5c5c;
+      --accent: #007aff;
+      --accent-muted: rgba(0, 122, 255, 0.12);
+      --border-color: rgba(17, 17, 17, 0.08);
+      --shadow: 0 20px 40px rgba(0, 0, 0, 0.08);
+      --input-bg: #f8f8f8;
+      --option-bg: #f6f6f7;
+    }
+
+    body.theme-dark {
+      --bg-color: #0f1115;
+      --card-bg: #1d1f25;
+      --text-color: #f7f7fb;
+      --muted-text: #a3a7b2;
+      --accent: #0a84ff;
+      --accent-muted: rgba(10, 132, 255, 0.18);
+      --border-color: rgba(255, 255, 255, 0.08);
+      --shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
+      --input-bg: #242732;
+      --option-bg: #2a2f3c;
+    }
+
+    header, footer {
+      padding: 16px clamp(16px, 6vw, 80px);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+    }
+
+    header {
+      position: sticky;
+      top: 0;
+      backdrop-filter: blur(12px);
+      background: color-mix(in srgb, var(--bg-color) 90%, transparent);
+      z-index: 10;
+      border-bottom: 1px solid var(--border-color);
+    }
+
+    footer {
+      margin-top: auto;
+      font-size: 0.9rem;
+      color: var(--muted-text);
+      justify-content: center;
+    }
+
+    main {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: clamp(16px, 5vw, 80px);
+    }
+
+    .card {
+      width: min(720px, 100%);
+      background: var(--card-bg);
+      border-radius: var(--radius);
+      padding: clamp(20px, 5vw, 48px);
+      box-shadow: var(--shadow);
+      display: flex;
+      flex-direction: column;
+      gap: 24px;
+    }
+
+    h1 {
+      font-size: clamp(1.6rem, 4vw, 2.4rem);
+      margin: 0;
+    }
+
+    .progress {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .progress-track {
+      width: 100%;
+      height: 8px;
+      background: var(--border-color);
+      border-radius: 999px;
+      overflow: hidden;
+    }
+
+    .progress-fill {
+      height: 100%;
+      background: var(--accent);
+      width: 0;
+      transition: width 0.3s ease;
+    }
+
+    .question-area {
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius);
+      padding: var(--space);
+      background: color-mix(in srgb, var(--card-bg) 90%, transparent);
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .question-text {
+      font-size: 1.2rem;
+      line-height: 1.4;
+    }
+
+    .transcriptions {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      color: var(--muted-text);
+      font-size: 0.95rem;
+    }
+
+    label {
+      font-weight: 600;
+      display: inline-flex;
+      margin-bottom: 6px;
+    }
+
+    input[type="text"] {
+      width: 100%;
+      border: 1px solid var(--border-color);
+      border-radius: 12px;
+      padding: 14px;
+      background: var(--input-bg);
+      color: var(--text-color);
+      font-size: 1rem;
+      transition: border var(--transition), box-shadow var(--transition);
+    }
+
+    input[type="text"]:focus {
+      outline: none;
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px var(--accent-muted);
+    }
+
+    .options {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 12px;
+    }
+
+    .option-button, .primary-button, .secondary-button {
+      border: none;
+      border-radius: 14px;
+      padding: 14px 18px;
+      font-size: 1rem;
+      background: var(--option-bg);
+      color: var(--text-color);
+      cursor: pointer;
+      transition: transform var(--transition), box-shadow var(--transition), background var(--transition), color var(--transition), opacity var(--transition);
+      text-align: left;
+      box-shadow: inset 0 0 0 1px var(--border-color);
+    }
+
+    .primary-button {
+      background: var(--accent);
+      color: #fff;
+      text-align: center;
+      box-shadow: 0 8px 20px rgba(0, 122, 255, 0.3);
+    }
+
+    .secondary-button {
+      background: transparent;
+      box-shadow: inset 0 0 0 1px var(--border-color);
+      text-align: center;
+    }
+
+    .option-button:focus-visible,
+    .primary-button:focus-visible,
+    .secondary-button:focus-visible,
+    #themeToggle:focus-visible {
+      outline: none;
+      box-shadow: 0 0 0 3px var(--accent-muted);
+    }
+
+    .option-button:hover:not(:disabled),
+    .primary-button:hover:not(:disabled),
+    .secondary-button:hover:not(:disabled),
+    #themeToggle:hover {
+      transform: translateY(-1px);
+    }
+
+    .option-button:disabled,
+    .primary-button:disabled,
+    .secondary-button:disabled {
+      cursor: not-allowed;
+      opacity: 0.6;
+      transform: none;
+    }
+
+    .result-panel {
+      border-radius: var(--radius);
+      border: 1px solid var(--border-color);
+      padding: var(--space);
+      background: color-mix(in srgb, var(--card-bg) 92%, transparent);
+      display: none;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .result-panel.visible {
+      display: flex;
+    }
+
+    .result-status {
+      font-size: 1.1rem;
+      font-weight: 600;
+    }
+
+    .result-status.correct {
+      color: #2ec27e;
+    }
+
+    .result-status.wrong {
+      color: #ff6363;
+    }
+
+    .stats-screen {
+      display: none;
+      flex-direction: column;
+      gap: 16px;
+      text-align: center;
+    }
+
+    .stats-screen.visible {
+      display: flex;
+    }
+
+    .history-list {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      text-align: left;
+    }
+
+    .history-item {
+      border: 1px solid var(--border-color);
+      border-radius: 12px;
+      padding: 12px 16px;
+      background: color-mix(in srgb, var(--card-bg) 92%, transparent);
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .history-item strong {
+      font-size: 1rem;
+    }
+
+    #themeToggle {
+      border: none;
+      border-radius: 999px;
+      padding: 10px 16px;
+      background: var(--option-bg);
+      color: var(--text-color);
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      transition: background var(--transition), transform var(--transition);
+      box-shadow: inset 0 0 0 1px var(--border-color);
+    }
+
+    #themeToggle svg {
+      width: 20px;
+      height: 20px;
+      fill: currentColor;
+    }
+
+    @media (max-width: 600px) {
+      header, footer {
+        flex-direction: column;
+        text-align: center;
+      }
+
+      .options {
+        grid-template-columns: 1fr;
+      }
+
+      .option-button {
+        text-align: center;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div>
+      <h1>Месяцы на французском</h1>
+      <p style="margin:4px 0 0;color:var(--muted-text)">Тренировка на 8 раундов</p>
+    </div>
+    <button id="themeToggle" type="button" aria-pressed="false" aria-label="Переключить тему"></button>
+  </header>
+
+  <main>
+    <section class="card" aria-live="polite">
+      <div class="progress" aria-label="Прогресс тренировки">
+        <span id="progressText">Раунд 1 из 8</span>
+        <div class="progress-track" role="progressbar" aria-valuemin="0" aria-valuemax="8" aria-valuenow="0">
+          <div class="progress-fill" id="progressFill"></div>
+        </div>
+      </div>
+
+      <section class="question-area" id="questionArea" aria-labelledby="questionPrompt" role="group"></section>
+
+      <div class="result-panel" id="resultPanel" aria-live="assertive">
+        <div id="resultStatus" class="result-status"></div>
+        <div id="correctAnswer"></div>
+      </div>
+
+      <button id="nextButton" class="primary-button" type="button" hidden>Далее</button>
+
+      <section id="statsScreen" class="stats-screen" aria-live="polite">
+        <h2>Результат тренировки</h2>
+        <p id="statsSummary"></p>
+        <p id="statsComment" style="color:var(--muted-text)"></p>
+        <ul class="history-list" id="historyList" aria-label="История раундов"></ul>
+        <button id="restartButton" class="secondary-button" type="button">Пройти ещё раз</button>
+      </section>
+    </section>
+  </main>
+
+  <footer>
+    <span>Создано для тренировки французских месяцев</span>
+  </footer>
+
+  <script>
+    // ---------------------- Data ----------------------
+    const monthsData = [
+      { fr: "janvier", ipa: "ʒɑ̃.vje", ruPron: "жанвье", ru: "январь" },
+      { fr: "février", ipa: "fe.vʁi.e", ruPron: "февриэ", ru: "февраль" },
+      { fr: "mars", ipa: "maʁs", ruPron: "марс", ru: "март" },
+      { fr: "avril", ipa: "a.vʁil", ruPron: "авриль", ru: "апрель" },
+      { fr: "mai", ipa: "mɛ", ruPron: "мэ", ru: "май" },
+      { fr: "juin", ipa: "ʒɥɛ̃", ruPron: "жю̃эн", ru: "июнь" },
+      { fr: "juillet", ipa: "ʒɥi.jɛ", ruPron: "жюйе", ru: "июль" },
+      { fr: "août", ipa: "u", ruPron: "у", ru: "август" },
+      { fr: "septembre", ipa: "sɛp.tɑ̃bʁ", ruPron: "сэптанбр", ru: "сентябрь" },
+      { fr: "octobre", ipa: "ɔk.tɔbʁ", ruPron: "октобр", ru: "октябрь" },
+      { fr: "novembre", ipa: "nɔ.vɑ̃bʁ", ruPron: "новɑ̃бр", ru: "ноябрь" },
+      { fr: "décembre", ipa: "de.sɑ̃bʁ", ruPron: "десɑ̃бр", ru: "декабрь" }
+    ];
+
+    const totalRounds = 8;
+
+    // ------------------- State management -------------------
+    let currentRound = 0;
+    let currentQuestion = null;
+    let answered = false;
+    const roundsHistory = [];
+
+    // ---------------------- DOM elements ----------------------
+    const questionArea = document.getElementById("questionArea");
+    const progressText = document.getElementById("progressText");
+    const progressFill = document.getElementById("progressFill");
+    const progressBar = document.querySelector(".progress-track");
+    const resultPanel = document.getElementById("resultPanel");
+    const resultStatus = document.getElementById("resultStatus");
+    const correctAnswer = document.getElementById("correctAnswer");
+    const nextButton = document.getElementById("nextButton");
+    const statsScreen = document.getElementById("statsScreen");
+    const statsSummary = document.getElementById("statsSummary");
+    const statsComment = document.getElementById("statsComment");
+    const historyList = document.getElementById("historyList");
+    const restartButton = document.getElementById("restartButton");
+    const themeToggle = document.getElementById("themeToggle");
+
+    // ---------------------- Theme handling ----------------------
+    const THEME_KEY = "monthsTheme";
+
+    const prefersDark = window.matchMedia("(prefers-color-scheme: dark)");
+
+    const applyTheme = (theme) => {
+      const themeToApply = theme || (prefersDark.matches ? "dark" : "light");
+      document.body.classList.toggle("theme-dark", themeToApply === "dark");
+      document.body.classList.toggle("theme-light", themeToApply === "light");
+      themeToggle.innerHTML = themeToApply === "dark"
+        ? '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M21 12.79A9 9 0 0111.21 3 7 7 0 0012 17a7 7 0 009-4.21z"/></svg><span>Тёмная тема</span>'
+        : '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 4.75a.75.75 0 01.75.75v2a.75.75 0 11-1.5 0V5.5A.75.75 0 0112 4.75zm0 11a.75.75 0 01.75.75v2a.75.75 0 11-1.5 0v-2a.75.75 0 01.75-.75zm7.25-3.75a.75.75 0 010 1.5h-2a.75.75 0 010-1.5h2zM6.75 12a.75.75 0 01-.75.75h-2a.75.75 0 010-1.5h2a.75.75 0 01.75.75zm11.03 5.28a.75.75 0 010 1.06l-1.41 1.41a.75.75 0 11-1.06-1.06l1.41-1.41a.75.75 0 011.06 0zm-9.19-9.19a.75.75 0 010 1.06L7.18 10.56a.75.75 0 11-1.06-1.06L7.53 7.03a.75.75 0 011.06 0zm9.19-1.06a.75.75 0 010 1.06L15.37 9.5a.75.75 0 01-1.06-1.06l2.41-2.41a.75.75 0 011.06 0zm-9.19 9.19a.75.75 0 010 1.06L7.53 19.5a.75.75 0 11-1.06-1.06l1.41-1.41a.75.75 0 011.06 0z"/></svg><span>Светлая тема</span>';
+      themeToggle.setAttribute("aria-pressed", themeToApply === "dark");
+    };
+
+    const storedTheme = localStorage.getItem(THEME_KEY);
+    applyTheme(storedTheme);
+
+    themeToggle.addEventListener("click", () => {
+      const isDark = document.body.classList.contains("theme-dark");
+      const newTheme = isDark ? "light" : "dark";
+      localStorage.setItem(THEME_KEY, newTheme);
+      applyTheme(newTheme);
+    });
+
+    prefersDark.addEventListener("change", (event) => {
+      if (!localStorage.getItem(THEME_KEY)) {
+        applyTheme(event.matches ? "dark" : "light");
+      }
+    });
+
+    // ---------------------- Quiz logic ----------------------
+    const startQuiz = () => {
+      currentRound = 0;
+      roundsHistory.length = 0;
+      statsScreen.classList.remove("visible");
+      nextButton.hidden = true;
+      resultPanel.classList.remove("visible");
+      generateQuestion();
+      updateProgressUI();
+    };
+
+    const getRandomMonth = () => monthsData[Math.floor(Math.random() * monthsData.length)];
+
+    const generateQuestion = () => {
+      answered = false;
+      currentRound += 1;
+      currentQuestion = {
+        month: getRandomMonth(),
+        type: Math.random() < 0.5 ? "input" : "choice"
+      };
+
+      renderQuestion();
+      updateProgressUI();
+      resultPanel.classList.remove("visible");
+      nextButton.hidden = true;
+    };
+
+    const updateProgressUI = () => {
+      progressText.textContent = `Раунд ${Math.min(currentRound, totalRounds)} из ${totalRounds}`;
+      const progressPercent = ((currentRound - (answered ? 0 : 1)) / totalRounds) * 100;
+      progressFill.style.width = `${Math.max(progressPercent, 0)}%`;
+      progressBar.setAttribute("aria-valuenow", Math.min(currentRound - (answered ? 0 : 1), totalRounds));
+    };
+
+    const renderQuestion = () => {
+      questionArea.innerHTML = "";
+
+      const prompt = document.createElement("h2");
+      prompt.id = "questionPrompt";
+      prompt.className = "question-text";
+      questionArea.appendChild(prompt);
+
+      if (currentQuestion.type === "input") {
+        prompt.textContent = `Напишите по-французски: «${currentQuestion.month.ru}»`;
+        renderInputQuestion();
+      } else {
+        prompt.textContent = `Что означает «${currentQuestion.month.fr}»?`;
+        renderChoiceQuestion();
+      }
+    };
+
+    const renderInputQuestion = () => {
+      const form = document.createElement("form");
+      form.setAttribute("aria-label", "Ввод ответа по-французски");
+
+      const label = document.createElement("label");
+      label.setAttribute("for", "answerInput");
+      label.textContent = "Ваш ответ";
+
+      const input = document.createElement("input");
+      input.type = "text";
+      input.id = "answerInput";
+      input.autocomplete = "off";
+      input.autocapitalize = "none";
+      input.spellcheck = false;
+      input.required = true;
+
+      const button = document.createElement("button");
+      button.type = "submit";
+      button.textContent = "Ответить";
+      button.className = "primary-button";
+      button.style.marginTop = "12px";
+
+      form.append(label, input, button);
+      questionArea.appendChild(form);
+      input.focus();
+
+      form.addEventListener("submit", (event) => {
+        event.preventDefault();
+        if (answered) return;
+        const userAnswer = input.value.trim().toLowerCase();
+        if (!userAnswer) return;
+        const isCorrect = userAnswer === currentQuestion.month.fr;
+        showResult(isCorrect, userAnswer || "—");
+        input.disabled = true;
+        button.disabled = true;
+      });
+    };
+
+    const renderChoiceQuestion = () => {
+      const transcriptions = document.createElement("div");
+      transcriptions.className = "transcriptions";
+      transcriptions.innerHTML = `<span>IPA: <strong>${currentQuestion.month.ipa}</strong></span><span>Русская транскрипция: <strong>${currentQuestion.month.ruPron}</strong></span>`;
+
+      const optionsContainer = document.createElement("div");
+      optionsContainer.className = "options";
+      optionsContainer.setAttribute("role", "radiogroup");
+
+      const options = new Set([currentQuestion.month.ru]);
+      while (options.size < 4) {
+        options.add(getRandomMonth().ru);
+      }
+
+      const shuffled = Array.from(options).sort(() => Math.random() - 0.5);
+
+      shuffled.forEach((optionText) => {
+        const button = document.createElement("button");
+        button.className = "option-button";
+        button.type = "button";
+        button.textContent = optionText;
+        button.setAttribute("aria-pressed", "false");
+        button.addEventListener("click", () => handleChoice(button, optionText));
+        optionsContainer.appendChild(button);
+      });
+
+      questionArea.append(transcriptions, optionsContainer);
+    };
+
+    const handleChoice = (button, optionText) => {
+      if (answered) return;
+      answered = true;
+      const isCorrect = optionText === currentQuestion.month.ru;
+      showResult(isCorrect, optionText);
+      const buttons = questionArea.querySelectorAll(".option-button");
+      buttons.forEach((btn) => {
+        btn.disabled = true;
+        btn.setAttribute("aria-pressed", btn === button ? "true" : "false");
+        if (btn.textContent === currentQuestion.month.ru) {
+          btn.style.boxShadow = "0 0 0 2px #2ec27e";
+        }
+        if (btn === button && !isCorrect) {
+          btn.style.boxShadow = "0 0 0 2px #ff6363";
+        }
+      });
+    };
+
+    const showResult = (isCorrect, userAnswer) => {
+      answered = true;
+      const { month } = currentQuestion;
+      resultPanel.classList.add("visible");
+      resultStatus.textContent = isCorrect ? "Верно!" : "Неверно";
+      resultStatus.className = `result-status ${isCorrect ? "correct" : "wrong"}`;
+      correctAnswer.innerHTML = `<strong>${month.fr}</strong> — ${month.ru}<br>IPA: ${month.ipa} | Русская транскрипция: ${month.ruPron}`;
+      nextButton.hidden = false;
+
+      roundsHistory.push({
+        round: currentRound,
+        type: currentQuestion.type,
+        month,
+        isCorrect,
+        userAnswer
+      });
+
+      if (currentRound >= totalRounds) {
+        nextButton.textContent = "Смотреть результат";
+      } else {
+        nextButton.textContent = "Далее";
+      }
+
+      updateProgressUI();
+    };
+
+    nextButton.addEventListener("click", () => {
+      if (!answered) return;
+      if (currentRound >= totalRounds) {
+        showStats();
+      } else {
+        generateQuestion();
+      }
+    });
+
+    const showStats = () => {
+      questionArea.innerHTML = "";
+      resultPanel.classList.remove("visible");
+      nextButton.hidden = true;
+      const correctCount = roundsHistory.filter((round) => round.isCorrect).length;
+      const percent = Math.round((correctCount / totalRounds) * 100);
+      statsSummary.textContent = `${correctCount} из ${totalRounds} (${percent}%) правильных ответов`;
+      if (percent <= 40) {
+        statsComment.textContent = "Продолжайте тренироваться — вы на верном пути!";
+      } else if (percent < 80) {
+        statsComment.textContent = "Хороший результат, осталось чуть-чуть до совершенства.";
+      } else {
+        statsComment.textContent = "Отлично! Французские месяцы вам по плечу.";
+      }
+
+      historyList.innerHTML = "";
+      roundsHistory.forEach((round) => {
+        const item = document.createElement("li");
+        item.className = "history-item";
+        const typeText = round.type === "input" ? "ввод" : "выбор";
+        item.innerHTML = `<strong>Раунд ${round.round} — ${round.month.ru}</strong>
+          <span>Тип: ${typeText}</span>
+          <span>Ответ: ${round.userAnswer || "—"}</span>
+          <span>Статус: ${round.isCorrect ? "верно" : "ошибка"}</span>`;
+        historyList.appendChild(item);
+      });
+
+      statsScreen.classList.add("visible");
+      progressText.textContent = "Тренировка завершена";
+      progressFill.style.width = "100%";
+      progressBar.setAttribute("aria-valuenow", totalRounds);
+    };
+
+    restartButton.addEventListener("click", () => {
+      statsScreen.classList.remove("visible");
+      startQuiz();
+    });
+
+    // ---------------------- Init ----------------------
+    startQuiz();
+  </script>
+</body>
+</html>
